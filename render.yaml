@@ -1,6 +1,12 @@
 services:
-  - type: worker
+  - type: web
     name: telegram-bot
     env: python
     buildCommand: pip install -r requirements.txt
     startCommand: bash start.sh
+    plan: free
+    envVars:
+      - key: BOT_TOKEN
+        value: 8127921766:AAFJBcEYYX6UhPjyZFG7-cC5_H8bb72Q_GA
+      - key: CHAT_ID
+        value: "1905948782"
