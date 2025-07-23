@@ -1,22 +1,20 @@
-
 import os
 import logging
 from telegram import Update, Bot
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 from apscheduler.schedulers.background import BackgroundScheduler
-from apscheduler.jobstores.base import JobLookupError
 import asyncio
 
-# 🔐 Переменные окружения
-TOKEN = os.getenv("BOT_TOKEN")
-CHAT_ID = os.getenv("CHAT_ID")
+# 🔐 Токен и ID
+BOT_TOKEN = "8127921766:AAFJBcEYYX6UhPjyZFG7-cC5_H8bb72Q_GA"
+CHAT_ID = "1905948782"
 ALLOWED_USERS = [int(CHAT_ID)]
 
 # 🔧 Логирование
 logging.basicConfig(level=logging.INFO)
 
 # 🤖 Бот
-bot = Bot(token=TOKEN)
+bot = Bot(token=BOT_TOKEN)
 
 # 🧹 Очистка чата
 async def clear_chat():
@@ -37,19 +35,23 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
     await update.message.reply_text("✅ Бот запущен и работает.")
 
-# 🚀 Запуск
+# 🚀 Основной запуск
 async def main():
-    app = ApplicationBuilder().token(TOKEN).build()
+    app = ApplicationBuilder().token(BOT_TOKEN).build()
 
     app.add_handler(CommandHandler("start", start))
 
-    # ⏰ Планировщик очистки каждую неделю
     scheduler = BackgroundScheduler(timezone="UTC")
-    scheduler.add_job(lambda: asyncio.run(clear_chat()), trigger="interval", days=7)
+    scheduler.add_job(lambda: asyncio.create_task(clear_chat()), trigger="interval", days=7)
     scheduler.start()
 
     logging.info("🤖 Бот запущен...")
     await app.run_polling()
 
+# 🔁 Запуск с учётом event loop
 if __name__ == "__main__":
-    asyncio.run(main())
+    import sys
+    if sys.platform == "win32":
+        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(main())
