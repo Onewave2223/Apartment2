@@ -2,9 +2,10 @@ services:
   - type: web
     name: telegram-bot
     env: python
+    plan: free
     buildCommand: pip install -r requirements.txt
     startCommand: bash start.sh
-    plan: free
+    pythonVersion: 3.10  # ⬅️ Очень важно! Без этого будет ошибка с Updater
     envVars:
       - key: BOT_TOKEN
         value: 8127921766:AAFJBcEYYX6UhPjyZFG7-cC5_H8bb72Q_GA
